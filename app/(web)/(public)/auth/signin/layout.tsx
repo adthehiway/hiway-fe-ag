@@ -9,8 +9,13 @@ export default function SignupLayout({
 }) {
   return (
     <main className="min-h-screen bg-[#F5F3EE] p-4 md:p-8 flex items-center justify-center">
-      {/* Outer Floating Container */}
-      <div className="w-full max-w-7xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[700px]">
+      {/* Outer Floating Container with light purple gradient */}
+      <div
+        className="w-full max-w-7xl rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[700px]"
+        style={{
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f7ff 30%, #f0eeff 60%, #e8e4ff 100%)',
+        }}
+      >
 
         {/* Form Side - Left */}
         <div className="relative w-full md:w-1/2 p-8 sm:p-12 lg:p-16 flex items-center justify-center">
