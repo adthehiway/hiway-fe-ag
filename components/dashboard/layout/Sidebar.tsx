@@ -1,7 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { bottomItems, navItems } from "@/config/dashboard/sidebar";
+import { categoryItemsMap } from "@/config/dashboard/navigation";
 import { useSidebar } from "@/contexts/sidebar";
+import { useNavigation } from "@/contexts/navigation";
 import { useCompany } from "@/hooks/useCompanies";
 import { useUser } from "@/hooks/useUser";
 import { useEffectiveRole } from "@/hooks/useUserRole";
@@ -63,6 +65,7 @@ export const Sidebar: React.FC = () => {
   const { data: user } = useUser();
   const effectiveRole = useEffectiveRole();
   const [logoutModal, setLogoutModal] = useState(false);
+  const { activeCategory } = useNavigation();
 
   // Company switcher
   const {
@@ -74,10 +77,18 @@ export const Sidebar: React.FC = () => {
     isSwitching,
   } = useCompanySwitcher();
 
-  // Filter nav items based on permissions
+  // Get items for the active category
+  const categoryItems = categoryItemsMap[activeCategory] || [];
+
+  // Filter nav items based on permissions and active category
   const filteredNavItems = useMemo(() => {
-    if (!effectiveRole) return navItems;
-    return navItems.filter((item) => {
+    // First filter by category
+    const categoryFiltered = navItems.filter((item) =>
+      categoryItems.includes(item.label)
+    );
+
+    if (!effectiveRole) return categoryFiltered;
+    return categoryFiltered.filter((item) => {
       // Show coming soon items (they'll be disabled anyway)
       if (item.comingSoon) return true;
       // If no permission required, show it
@@ -89,7 +100,7 @@ export const Sidebar: React.FC = () => {
         user || undefined
       );
     });
-  }, [effectiveRole, user]);
+  }, [effectiveRole, user, categoryItems]);
 
   // Filter bottom items based on permissions
   const filteredBottomItems = useMemo(() => {
