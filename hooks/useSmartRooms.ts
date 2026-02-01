@@ -9,6 +9,7 @@ import {
   SmartLinkAccess,
   ISmartRoom,
 } from "@/types";
+import { MOCK_MODE, mockSmartrooms, mockSmartRoomsAnalytics } from "@/lib/mock-data";
 
 interface UseSmartRoomsParams {
   access?: SmartLinkAccess;
@@ -34,12 +35,14 @@ export function useSmartRooms({
   } = useInfiniteQuery({
     queryKey: ["smartrooms", access, search],
     queryFn: ({ pageParam }) =>
-      SmartRoomService.getAll({
-        perPage,
-        access,
-        q: search,
-        continuationToken: pageParam,
-      }),
+      MOCK_MODE
+        ? Promise.resolve(mockSmartrooms)
+        : SmartRoomService.getAll({
+            perPage,
+            access,
+            q: search,
+            continuationToken: pageParam,
+          }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       // If continuationToken is 0, null, or undefined, we don't have more data
@@ -48,7 +51,7 @@ export function useSmartRooms({
       }
       return lastPage.continuationToken;
     },
-    staleTime: 1 * 60 * 1000, // 1 minute
+    staleTime: MOCK_MODE ? Infinity : 1 * 60 * 1000,
     gcTime: 3 * 60 * 1000, // 3 minutes cache time
     refetchOnWindowFocus: false,
     refetchOnMount: false,

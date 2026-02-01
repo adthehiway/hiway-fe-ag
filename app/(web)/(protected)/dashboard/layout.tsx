@@ -15,22 +15,29 @@ export default function DashboardLayout({
   const { isCollapsed } = useSidebar();
   return (
     <MediaManagerProvider>
-      <div className={cn("flex  w-full")}>
-        <Sidebar />
-        <main
-          className={cn(
-            "flex-1  min-h-screen max-lg:w-full max-lg:pt-16 transition-all duration-300 pt-16",
-            !isCollapsed ? "lg:pl-64" : "lg:pl-20",
-          )}
-        >
-          <Header />
-          <div className="flex-1 space-y-3   p-2 md:p-4 lg:p-6 w-full overflow-x-hidden ">
-            <StripeOnboardingBanner />
-            {children}
+      {/* Outer light background */}
+      <div className="h-screen w-screen bg-slate-100 p-3 md:p-4 overflow-hidden">
+        {/* Navy frame - wraps everything */}
+        <div className="h-full w-full bg-[#0f172a] rounded-[2rem] p-3 md:p-4 flex gap-3 md:gap-4">
+          {/* Sidebar area */}
+          <div className={cn(
+            "flex-shrink-0 transition-all duration-300 hidden lg:block",
+            !isCollapsed ? "w-60" : "w-20"
+          )}>
+            <Sidebar />
           </div>
-        </main>
-        <UploadProgressWidget />
+
+          {/* Main content - white card inside navy frame */}
+          <main className="flex-1 bg-white rounded-[1.5rem] shadow-xl overflow-hidden flex flex-col">
+            <Header />
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-slate-50/50">
+              <StripeOnboardingBanner />
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
+      <UploadProgressWidget />
     </MediaManagerProvider>
   );
 }

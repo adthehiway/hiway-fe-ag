@@ -8,12 +8,13 @@ import {
   IPaginatedRevenueHistory,
   SmartLinkAccess,
 } from "@/types";
+import { MOCK_MODE, mockCRMAnalytics, mockCRMContacts } from "@/lib/mock-data";
 
 export const useCRMAnalytics = () => {
   return useQuery<ICRMAnalytics>({
     queryKey: ["crm", "analytics"],
-    queryFn: () => CRMService.getAnalytics(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockCRMAnalytics as any) : CRMService.getAnalytics(),
+    staleTime: MOCK_MODE ? Infinity : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };
@@ -27,8 +28,8 @@ export const useCRMContacts = (params: {
 }) => {
   return useQuery({
     queryKey: ["crm", "contacts", params],
-    queryFn: () => CRMService.getContacts(params),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockCRMContacts as any) : CRMService.getContacts(params),
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
   });
 };

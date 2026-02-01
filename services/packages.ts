@@ -2,11 +2,15 @@
 
 import { api } from "./api";
 import { IPackage, IPackagePurchase, IPackageGrouped } from "@/types";
+import { MOCK_MODE, mockPackages } from "@/lib/mock-data";
 
 export class PackageService {
   private domain = "packages";
 
   async getAll(): Promise<IPackageGrouped> {
+    if (MOCK_MODE) {
+      return Promise.resolve(mockPackages);
+    }
     return api.get(`${this.domain}`);
   }
 

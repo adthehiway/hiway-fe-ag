@@ -57,6 +57,9 @@ export function UploadProgressWidget() {
       ],
       perPage: 100,
     }).then((data: IPaginationResult<IMedia>) => {
+      // Handle case where data or items might be undefined (e.g., in mock mode)
+      if (!data?.items) return;
+
       const items: ProcessingItem[] = data.items.map((item) => ({
         id: item.id,
         name: item.metadata?.title || item.name,
@@ -66,6 +69,8 @@ export function UploadProgressWidget() {
       }));
 
       monitorStatus(items);
+    }).catch(() => {
+      // Silently handle errors in mock mode
     });
   }, []);
 

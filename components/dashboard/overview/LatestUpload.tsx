@@ -53,16 +53,22 @@ const LatestUpload = ({
             <CardTitle>Latest Upload</CardTitle>
             <CardDescription>Your most recent video content</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="pt-0">
+            <div className="space-y-3">
               <div className="relative aspect-video bg-muted/50 rounded-lg overflow-hidden">
-                <img
-                  src={`${process.env.NEXT_PUBLIC_CONTENT_FABRIC_BASE_URL_STATICS}${overviewData?.recentMedia.cfThumbnail}?width=270`}
-                  alt={overviewData?.recentMedia.metadata?.title}
-                  className="w-full h-full object-cover absolute inset-0 "
-                />
-                <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-20 flex items-center justify-center rounded-full bg-muted">
-                  <Play />
+                {overviewData?.recentMedia.cfThumbnail && process.env.NEXT_PUBLIC_CONTENT_FABRIC_BASE_URL_STATICS ? (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_CONTENT_FABRIC_BASE_URL_STATICS}${overviewData?.recentMedia.cfThumbnail}?width=270`}
+                    alt={overviewData?.recentMedia.metadata?.title}
+                    className="w-full h-full object-cover absolute inset-0"
+                  />
+                ) : (
+                  <div className="w-full h-full absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
+                    <Play className="size-12 text-slate-400" />
+                  </div>
+                )}
+                <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-12 flex items-center justify-center rounded-full bg-muted">
+                  <Play size={20} />
                 </button>
                 <div className="absolute bottom-2 right-2">
                   <div className="inline-flex items-center rounded-full  px-2 py-0.5 text-xs font-semibold  bg-muted text-white">
@@ -78,14 +84,14 @@ const LatestUpload = ({
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="font-medium text-white line-clamp-2">
+              <div className="space-y-1">
+                <h3 className="font-medium text-slate-900 line-clamp-1 text-sm">
                   {overviewData?.recentMedia.metadata?.title}
                 </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2">
+                <p className="text-xs text-slate-500 line-clamp-1">
                   {overviewData?.recentMedia.metadata?.description}
                 </p>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <div className="flex items-center justify-between text-xs text-slate-500">
                   <span>
                     Uploaded{" "}
                     {new Date(
@@ -98,10 +104,11 @@ const LatestUpload = ({
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 pt-1">
                 <Button
                   variant={"secondary"}
                   className="flex-1"
+                  size="sm"
                   onClick={() =>
                     router.push(
                       `/dashboard/media/${overviewData?.recentMedia.id}/edit`
@@ -112,6 +119,7 @@ const LatestUpload = ({
                 </Button>
                 <Button
                   className="flex-1"
+                  size="sm"
                   onClick={() =>
                     router.push(
                       `/dashboard/media/${overviewData?.recentMedia.id}`
@@ -130,7 +138,7 @@ const LatestUpload = ({
             <CardTitle>Latest Upload</CardTitle>
             <CardDescription>Your most recent video content</CardDescription>
           </CardHeader>
-          <CardContent className="text-center text-muted-foreground flex items-center justify-center h-full">
+          <CardContent className="text-center text-muted-foreground flex items-center justify-center py-6 text-sm">
             You have no recent uploads, upload a video to get started
           </CardContent>
         </Card>

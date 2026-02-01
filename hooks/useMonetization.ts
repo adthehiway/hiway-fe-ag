@@ -15,12 +15,13 @@ import {
   RefundTransactionResponse,
 } from "@/types";
 import { toast } from "react-toastify";
+import { MOCK_MODE, mockMonetizationStats, mockPayoutSchedule, mockCoupons } from "@/lib/mock-data";
 
 export function useMonetizationStats() {
   return useQuery<MonetizationStats>({
     queryKey: ["monetization", "stats"],
-    queryFn: () => MonetizationService.stats(),
-    staleTime: 5 * 60 * 1000,
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockMonetizationStats as any) : MonetizationService.stats(),
+    staleTime: MOCK_MODE ? Infinity : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
@@ -29,8 +30,8 @@ export function useMonetizationStats() {
 export function usePayoutSchedule() {
   return useQuery<GetPayoutScheduleResponse>({
     queryKey: ["monetization", "payout-schedule"],
-    queryFn: () => MonetizationService.getPayoutSchedule(),
-    staleTime: 2 * 60 * 1000,
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockPayoutSchedule as any) : MonetizationService.getPayoutSchedule(),
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
@@ -58,8 +59,8 @@ export function useUpdatePayoutSchedule() {
 export function useCoupons() {
   return useQuery<CouponResponse[]>({
     queryKey: ["monetization", "coupons"],
-    queryFn: () => MonetizationService.getCoupons(),
-    staleTime: 2 * 60 * 1000,
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockCoupons as any) : MonetizationService.getCoupons(),
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });

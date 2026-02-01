@@ -8,26 +8,13 @@ export default function SignupLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-[#F5F3EE] p-4 md:p-8 flex items-center justify-center">
-      {/* Outer Floating Container with light purple gradient */}
-      <div
-        className="w-full max-w-7xl rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[700px]"
-        style={{
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8f7ff 30%, #f0eeff 60%, #e8e4ff 100%)',
-        }}
-      >
-
-        {/* Form Side - Left */}
-        <div className="relative w-full md:w-1/2 p-8 sm:p-12 lg:p-16 flex items-center justify-center">
-          <div className="w-full max-w-md">
-            {children}
-          </div>
-        </div>
-
-        {/* Image Side - Right */}
-        <div className="w-full hidden md:block md:w-1/2 p-4 relative">
-          {/* Image container */}
-          <div className="w-full h-full overflow-hidden rounded-2xl relative">
+    // Outer light background
+    <div className="h-screen w-screen bg-slate-100 p-3 md:p-4 overflow-hidden">
+      {/* Navy frame */}
+      <div className="h-full w-full bg-[#0f172a] rounded-[2rem] p-3 md:p-4 flex gap-3 md:gap-4">
+        {/* Left side - Image card */}
+        <div className="hidden md:block w-1/2">
+          <div className="h-full w-full overflow-hidden rounded-[1.5rem] relative">
             <Image
               src={"/images/auth.png"}
               alt="auth"
@@ -36,7 +23,14 @@ export default function SignupLayout({
             />
           </div>
         </div>
+
+        {/* Right side - Form card */}
+        <div className="flex-1 bg-white rounded-[1.5rem] shadow-xl flex items-center justify-center p-6 md:p-12">
+          <div className="w-full max-w-md">
+            {children}
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

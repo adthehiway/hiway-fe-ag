@@ -226,13 +226,13 @@ const CRMContent = () => {
           analyticsCards.map((item, index) => (
             <Card key={index}>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="tracking-tight text-sm font-medium text-white">
+                <CardTitle className="tracking-tight text-sm font-medium text-slate-900">
                   {item.title}
                 </CardTitle>
                 <item.icon className={`h-4 w-4 ${item.iconColor}`} />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">
+                <div className="text-3xl font-bold text-slate-900">
                   {item.value}
                 </div>
                 <p className="text-muted-foreground text-sm">
@@ -365,7 +365,7 @@ const CRMContent = () => {
                       <th className="py-3 px-6 font-semibold"></th>
                     </tr>
                   </thead>
-                  <tbody className="text-white text-sm">
+                  <tbody className="text-slate-900 text-sm">
                     {contactsLoading ? (
                       Array.from({ length: 3 }).map((_, index) => (
                         <tr key={index} className="border-b">

@@ -12,6 +12,7 @@ import {
   ISmartLink,
   ISettings,
 } from "@/types";
+import { MOCK_MODE, mockSmartlinks, mockSmartlinksAnalytics, mockSettings } from "@/lib/mock-data";
 
 interface UseSmartLinksParams {
   access?: SmartLinkAccess;
@@ -40,13 +41,15 @@ export function useSmartLinks({
   } = useInfiniteQuery({
     queryKey: ["smartlinks", access, search, status],
     queryFn: ({ pageParam }) =>
-      SmartLinkService.getAll({
-        perPage,
-        access,
-        q: search,
-        continuationToken: pageParam,
-        status: status !== SmartLinkStatus.ALL ? status : undefined,
-      }),
+      MOCK_MODE
+        ? Promise.resolve(mockSmartlinks)
+        : SmartLinkService.getAll({
+            perPage,
+            access,
+            q: search,
+            continuationToken: pageParam,
+            status: status !== SmartLinkStatus.ALL ? status : undefined,
+          }),
     enabled: enabled && !!access, // Only run if enabled and access is provided
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
@@ -56,7 +59,7 @@ export function useSmartLinks({
       }
       return lastPage.continuationToken;
     },
-    staleTime: 1 * 60 * 1000, // 1 minute - shorter cache since it's filterable
+    staleTime: MOCK_MODE ? Infinity : 1 * 60 * 1000,
     gcTime: 3 * 60 * 1000, // 3 minutes cache time
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -199,8 +202,8 @@ export function useDeleteSmartLink() {
 export function useSmartLinksAnalytics() {
   return useQuery({
     queryKey: ["smartlinks-analytics"],
-    queryFn: () => SmartLinkService.getAnalytics(),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockSmartlinksAnalytics) : SmartLinkService.getAnalytics(),
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -210,8 +213,8 @@ export function useSmartLinksAnalytics() {
 export function useSettings() {
   return useQuery({
     queryKey: ["settings"],
-    queryFn: () => SettingsService.get(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockSettings as ISettings) : SettingsService.get(),
+    staleTime: MOCK_MODE ? Infinity : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   });

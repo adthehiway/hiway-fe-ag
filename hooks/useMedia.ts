@@ -19,6 +19,7 @@ import {
   ContentRelationshipType,
 } from "@/types";
 import { toast } from "react-toastify";
+import { MOCK_MODE, mockMediaList, mockMediaStats, mockStorageDetails } from "@/lib/mock-data";
 
 export function useMedia(id: string, token: boolean = false) {
   const { data, isLoading, isError, error, refetch } = useQuery<IMedia, Error>({
@@ -68,13 +69,21 @@ export function useMediaByStatus(
   perPage: number = 100,
   search?: string
 ) {
+  const getMockData = () => {
+    // Return media that matches the status filter
+    if (status.includes(MediaStatus.READY)) {
+      return { items: mockMediaList };
+    }
+    return { items: [] };
+  };
+
   const { data, isLoading, isError, error, refetch } = useQuery<
     { items: IMedia[] },
     Error
   >({
     queryKey: ["media-by-status", status, perPage, search],
-    queryFn: () => MediaService.getByStatus({ status, perPage, search }),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryFn: () => MOCK_MODE ? Promise.resolve(getMockData()) : MediaService.getByStatus({ status, perPage, search }),
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -281,8 +290,8 @@ export function useMediaStats() {
     Error
   >({
     queryKey: ["media-stats"],
-    queryFn: () => MediaService.getStats(),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockMediaStats as any) : MediaService.getStats(),
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -310,6 +319,13 @@ export function useMediaList({
   continuationToken?: number;
   perPage?: number;
 } = {}) {
+  const getMockMediaList = (): IPaginationResult<IMedia> => ({
+    items: mockMediaList,
+    continuationToken: undefined,
+    total: mockMediaList.length,
+    perPage: perPage || 12,
+  });
+
   const { data, isLoading, isError, error, refetch } = useQuery<
     IPaginationResult<IMedia>,
     Error
@@ -323,14 +339,14 @@ export function useMediaList({
       perPage,
     ],
     queryFn: () =>
-      MediaService.getMediaList({
+      MOCK_MODE ? Promise.resolve(getMockMediaList()) : MediaService.getMediaList({
         search,
         status,
         contentType,
         continuationToken,
         perPage,
       }),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -529,10 +545,9 @@ export function useStorageDetails() {
     Error
   >({
     queryKey: ["storage-details"],
-    queryFn: () => MediaService.getStorageDetails(),
-    staleTime: 5 * 60 * 1000,
-    
-    refetchOnWindowFocus: true,
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockStorageDetails) : MediaService.getStorageDetails(),
+    staleTime: MOCK_MODE ? Infinity : 5 * 60 * 1000,
+    refetchOnWindowFocus: !MOCK_MODE,
   });
 
   return {

@@ -210,7 +210,9 @@ function UploadPageContent() {
       </div>
 
       {/* Upload Queue Section */}
-      <UploadQueueSection />
+      <div className="mt-10">
+        <UploadQueueSection />
+      </div>
     </>
   );
 }

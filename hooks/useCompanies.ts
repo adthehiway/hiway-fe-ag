@@ -6,13 +6,14 @@ import {
   ICompanyAnalyticsFilters,
   IRevenue,
 } from "@/types";
+import { MOCK_MODE, mockCompany, mockCompanyAnalytics } from "@/lib/mock-data";
 
 // Hook for fetching a single company by ID
 export function useCompany() {
   return useQuery({
     queryKey: ["company"],
-    queryFn: () => CompanyService.getUserCompany(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockCompany as any) : CompanyService.getUserCompany(),
+    staleTime: MOCK_MODE ? Infinity : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   });
@@ -76,9 +77,9 @@ export function useCompanyAnalytics(
 ) {
   return useQuery({
     queryKey: ["company-analytics", companyId, filters],
-    queryFn: () => CompanyService.getAnalyticsByCompanyId(companyId, filters),
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockCompanyAnalytics as any) : CompanyService.getAnalyticsByCompanyId(companyId, filters),
     enabled: !!companyId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });

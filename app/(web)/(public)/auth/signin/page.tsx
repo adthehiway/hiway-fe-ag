@@ -20,7 +20,7 @@ export default function SignInPage() {
         text="Don't have an account yet?"
         button="Sign In"
         link={
-          <Link href={"/auth/signup"} className="text-indigo-600 font-medium hover:text-indigo-700">
+          <Link href={"/auth/signup"} className="text-[#00B4B4] font-medium hover:text-[#00d4d4] transition-colors">
             Sign Up
           </Link>
         }

@@ -4,6 +4,23 @@ import { IUserCompany, IUserCompaniesResponse } from "@/types";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "@/lib/utils";
+import { MOCK_MODE, mockUserCompanies, mockCompany } from "@/lib/mock-data";
+
+function getMockUserCompaniesResponse(): IUserCompaniesResponse {
+  return {
+    companies: mockUserCompanies.map(c => ({
+      companyId: c.id,
+      companyName: c.name,
+      companyLogo: c.logo,
+      role: c.role,
+      id: c.id,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })),
+    activeCompanyId: mockCompany.id,
+  } as IUserCompaniesResponse;
+}
 
 /**
  * Hook for managing company switching
@@ -18,15 +35,15 @@ export function useCompanySwitcher() {
     isLoading: isLoadingCompanies,
     refetch: refetchCompanies,
   } = useQuery<IUserCompaniesResponse>({
-    queryKey: ["user-companies"],
-    queryFn: () => CompanyService.getUserCompanies(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryKey: ["user-companies", MOCK_MODE ? "mock" : "api"],
+    queryFn: () => MOCK_MODE ? Promise.resolve(getMockUserCompaniesResponse()) : CompanyService.getUserCompanies(),
+    staleTime: MOCK_MODE ? Infinity : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   // Initialize active company from localStorage or API response
   useEffect(() => {
-    if (companiesData) {
+    if (companiesData?.companies) {
       const stored = localStorage.getItem("activeCompanyId");
       const validStored =
         stored && companiesData.companies.some((c) => c.companyId === stored);

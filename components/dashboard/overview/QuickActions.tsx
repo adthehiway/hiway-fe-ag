@@ -36,16 +36,15 @@ const QuickActions = ({
             </div>
             <Skeleton className="h-8 w-8 rounded-full" />
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-3">
-              {[...Array(3)].map((_, index) => (
+          <CardContent className="pt-0">
+            <div className="grid gap-2 grid-cols-2">
+              {[...Array(4)].map((_, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-center text-center px-4 py-6 rounded-lg bg-muted/50 border "
+                  className="flex flex-col items-center text-center p-2 rounded-lg bg-muted/50 border"
                 >
-                  <Skeleton className="h-12 w-12 rounded-lg mb-3" />
-                  <Skeleton className="h-5 w-32 mb-2" />
-                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-8 w-8 rounded-lg mb-1" />
+                  <Skeleton className="h-3 w-16" />
                 </div>
               ))}
             </div>
@@ -59,12 +58,12 @@ const QuickActions = ({
               Streamline your workflow with these shortcuts
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
+          <CardContent className="pt-0">
+            <div className="grid gap-2 grid-cols-2">
               {quickActions.map((action, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-center text-center px-4 py-6 rounded-lg bg-muted/50 border cursor-pointer"
+                  className="flex flex-col items-center text-center p-2 rounded-lg bg-muted/50 border cursor-pointer hover:bg-muted/80 transition-colors"
                   onClick={() => {
                     if (action.key === "uploadMedia") {
                       router.push("/dashboard/upload");
@@ -77,15 +76,12 @@ const QuickActions = ({
                     }
                   }}
                 >
-                  <div className="h-12 w-12 rounded-lg text-accent flex items-center justify-center mb-3">
-                    <action.icon />
+                  <div className="h-8 w-8 rounded-lg text-accent flex items-center justify-center mb-1">
+                    <action.icon size={20} />
                   </div>
-                  <h3 className=" font-medium mb-2">
-                    {index + 1}. {action.title}
+                  <h3 className="font-medium text-xs">
+                    {action.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {action.description}
-                  </p>
                 </div>
               ))}
             </div>

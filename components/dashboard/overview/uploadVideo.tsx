@@ -50,7 +50,7 @@ const UploadVideo = ({
       <CardContent>
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed  transition-all duration-300 rounded-lg p-8 text-center  mb-4 bg-muted/50 ${
+          className={`border-2 border-dashed transition-all duration-300 rounded-lg p-4 text-center bg-muted/50 ${
             isDragActive ? "border-accent " : "border-muted/50 "
           } ${
             disabled || !iscanWriteMedia
@@ -60,12 +60,13 @@ const UploadVideo = ({
         >
           <input {...getInputProps()} disabled={disabled || !iscanWriteMedia} />
           <div className="flex flex-col items-center">
-            <Upload size={48} className="text-accent mb-4" />
-            <p className="mb-1 ">Drag and drop your video files here</p>
-            <p className="text-muted-foreground text-sm">or click to browse</p>
+            <Upload size={32} className="text-accent mb-2" />
+            <p className="mb-1 text-sm">Drag and drop your video files here</p>
+            <p className="text-muted-foreground text-xs">or click to browse</p>
             <Button
               variant={"secondary"}
-              className="mt-4"
+              className="mt-3"
+              size="sm"
               disabled={disabled || !iscanWriteMedia}
             >
               Choose Files

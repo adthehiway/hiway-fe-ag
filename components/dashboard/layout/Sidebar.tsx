@@ -5,14 +5,48 @@ import { useSidebar } from "@/contexts/sidebar";
 import { useCompany } from "@/hooks/useCompanies";
 import { useUser } from "@/hooks/useUser";
 import { useEffectiveRole } from "@/hooks/useUserRole";
+import { useCompanySwitcher } from "@/hooks/useCompanySwitcher";
 import { cn, getActiveHref } from "@/lib/utils";
 import { hasAnyPermission, hasPermission } from "@/lib/permissions";
-import { X } from "lucide-react";
+import { Menu, X, User, DollarSign, LogOut, ChevronUp, ChevronDown, Check, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React, { useMemo } from "react";
-import { CompanySwitcher } from "./CompanySwitcher";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useMemo, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { LogoutWidget } from "@/components/auth/logout.widget";
+import { CompanyRole } from "@/types";
+
+const roleLabels: Record<CompanyRole, string> = {
+  [CompanyRole.OWNER]: "Owner",
+  [CompanyRole.ADMIN]: "Admin",
+  [CompanyRole.MEMBER]: "Member",
+  [CompanyRole.COLLABORATOR]: "Collaborator",
+};
+
+const roleColors: Record<CompanyRole, string> = {
+  [CompanyRole.OWNER]: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  [CompanyRole.ADMIN]: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  [CompanyRole.MEMBER]: "bg-gray-500/20 text-gray-400 border-gray-500/30",
+  [CompanyRole.COLLABORATOR]: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+};
+
+// Helper function to get company initials (e.g., "Demo Productions" -> "DP")
+const getCompanyInitials = (name: string | undefined): string => {
+  if (!name) return "H";
+  const words = name.split(" ").filter(word => word.length > 0);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+};
 
 export const Sidebar: React.FC = () => {
   const {
@@ -24,9 +58,21 @@ export const Sidebar: React.FC = () => {
     closeSidebar,
   } = useSidebar();
   const pathname = usePathname();
+  const router = useRouter();
   const { data: company } = useCompany();
   const { data: user } = useUser();
   const effectiveRole = useEffectiveRole();
+  const [logoutModal, setLogoutModal] = useState(false);
+
+  // Company switcher
+  const {
+    companies,
+    activeCompanyId,
+    activeCompany,
+    switchCompany,
+    isLoadingCompanies,
+    isSwitching,
+  } = useCompanySwitcher();
 
   // Filter nav items based on permissions
   const filteredNavItems = useMemo(() => {
@@ -88,8 +134,8 @@ export const Sidebar: React.FC = () => {
 
       <aside
         className={cn(
-          "fixed z-40 top-0 left-0 h-full flex flex-col bg-sidebar text-sidebar-foreground transition-all duration-300 border-r ",
-          "shadow-lg",
+          "fixed lg:relative z-40 top-0 left-0 h-full flex flex-col transition-all duration-300",
+          "bg-transparent",
           isOpen ? "translate-x-0" : "-translate-x-full",
           isCollapsed ? "w-20" : "w-64",
           "lg:translate-x-0"
@@ -106,36 +152,127 @@ export const Sidebar: React.FC = () => {
             <X className="size-6" />
           </Button>
         )}
-        {/* Header */}
-        <div
-          className={cn(
-            "flex items-center  px-4 h-16 border-b gap-3 ",
-            isCollapsed ? "justify-center" : "justify-start"
-          )}
-        >
-          {company?.logo ? (
-            <Image
-              src={company.logo}
-              alt={company?.name || ""}
-              width={38}
-              height={38}
-              className="rounded object-cover shrink-0"
-            />
-          ) : (
-            <div className="w-[38px] h-[38px] rounded bg-muted flex items-center justify-center text-lg font-bold text-white">
-              {company?.name?.[0] || "?"}
+        {/* Header - Company Switcher */}
+        <div className={cn("px-3 py-4", isCollapsed && "px-2")}>
+          {isLoadingCompanies ? (
+            <div className="flex items-center justify-center p-2">
+              <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
             </div>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={cn(
+                    "w-full flex items-center gap-3 rounded-xl p-2 hover:bg-white/10 transition-colors",
+                    isCollapsed && "justify-center"
+                  )}
+                >
+                  <div className="w-[38px] h-[38px] rounded-xl bg-gradient-to-br from-[#00B4B4] to-[#00a0a0] flex items-center justify-center text-sm font-bold text-white shrink-0">
+                    {getCompanyInitials(activeCompany?.companyName || company?.name)}
+                  </div>
+                  {!isCollapsed && (
+                    <div className="flex-1 min-w-0 text-left">
+                      <h3 className="text-white text-sm font-semibold truncate">
+                        {activeCompany?.companyName || company?.name || "Hiway"}
+                      </h3>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        {activeCompany?.role && (
+                          <Badge
+                            className={cn(
+                              roleColors[activeCompany.role],
+                              "border text-[10px] px-1.5 py-0"
+                            )}
+                          >
+                            {roleLabels[activeCompany.role]}
+                          </Badge>
+                        )}
+                        <ChevronDown size={14} className="text-gray-400 shrink-0" />
+                      </div>
+                    </div>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="bottom" sideOffset={5} className="w-64 z-[100]">
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                  Switch Company
+                </div>
+                {companies.length === 0 ? (
+                  <div className="px-2 py-3 text-sm text-muted-foreground">
+                    No companies available
+                  </div>
+                ) : null}
+                {companies.map((comp) => (
+                  <DropdownMenuItem
+                    key={comp.companyId}
+                    onClick={() => switchCompany(comp.companyId)}
+                    disabled={isSwitching || activeCompanyId === comp.companyId}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {comp.companyLogo ? (
+                        <Image
+                          src={comp.companyLogo}
+                          alt={comp.companyName}
+                          width={32}
+                          height={32}
+                          className="rounded-lg object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00B4B4] to-[#00a0a0] flex items-center justify-center text-sm font-bold text-white shrink-0">
+                          {comp.companyName[0]}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm truncate">
+                          {comp.companyName}
+                        </div>
+                        <Badge
+                          className={cn(
+                            roleColors[comp.role],
+                            "border text-[10px] px-1.5 py-0 mt-0.5"
+                          )}
+                        >
+                          {roleLabels[comp.role]}
+                        </Badge>
+                      </div>
+                    </div>
+                    {activeCompanyId === comp.companyId && (
+                      <Check className="w-4 h-4 text-[#00B4B4] shrink-0" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
+
+          {/* Collapse/Expand button */}
           {!isCollapsed && (
-            <h3 className="text-sidebar-primary-foreground text-sm font-medium whitespace-nowrap line-clamp-1 truncate">
-              {company?.name}
-            </h3>
+            <button
+              onClick={collapseSidebar}
+              className="absolute top-4 right-3 p-2 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+              aria-label="Collapse sidebar"
+            >
+              <Menu size={20} />
+            </button>
           )}
         </div>
+
+        {/* Collapse toggle when sidebar is collapsed - appears above nav */}
+        {isCollapsed && (
+          <div className="flex justify-center px-3 pb-2">
+            <button
+              onClick={expandSidebar}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+              aria-label="Expand sidebar"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        )}
         {/* Navigation */}
         <nav
           className={cn(
-            "flex-1 px-2 py-4 space-y-1 overflow-y-auto flex flex-col",
+            "flex-1 px-3 py-2 space-y-1 overflow-y-auto flex flex-col",
             isCollapsed ? "items-center" : "items-start w-full"
           )}
         >
@@ -150,24 +287,24 @@ export const Sidebar: React.FC = () => {
                 }
               }}
               className={cn(
-                "flex items-center gap-3 rounded-md transition-colors overflow-hidden whitespace-nowrap",
+                "flex items-center gap-3 rounded-2xl transition-all duration-200 whitespace-nowrap",
                 isActive(href || "") && !comingSoon
-                  ? "bg-accent text-accent-foreground"
-                  : "",
-                !comingSoon && !isActive(href || "") && "hover:bg-secondary",
+                  ? "bg-[#00B4B4] text-white shadow-lg shadow-[#00B4B4]/20"
+                  : "text-gray-400",
+                !comingSoon && !isActive(href || "") && "hover:bg-white/10 hover:text-white",
                 isCollapsed
                   ? "justify-center size-10"
                   : "px-3 py-2.5 w-full justify-start",
                 comingSoon &&
-                  "opacity-50 cursor-not-allowed pointer-events-none"
+                  "opacity-40 cursor-not-allowed pointer-events-none"
               )}
             >
-              <Icon size={22} className="shrink-0" />
+              <Icon size={20} className="shrink-0" />
               {!isCollapsed && (
                 <span className="flex flex-col">
-                  <span className="font-semibold text-sm">{label}</span>
+                  <span className="font-medium text-sm">{label}</span>
                   {comingSoon && (
-                    <span className="text-xs text-muted-foreground leading-tight">
+                    <span className="text-xs text-gray-500 leading-tight">
                       Coming Soon
                     </span>
                   )}
@@ -179,7 +316,7 @@ export const Sidebar: React.FC = () => {
         {/* Bottom actions (optional) */}
         <div
           className={cn(
-            "flex items-center justify-between py-4 border-t px-2",
+            "flex items-center justify-between py-3 border-t border-white/10 px-3",
             isCollapsed && "flex-col gap-2"
           )}
         >
@@ -189,37 +326,87 @@ export const Sidebar: React.FC = () => {
                 href={comingSoon ? "#" : href || ""}
                 key={label}
                 className={cn(
-                  "flex rounded-md transition-colors size-10 justify-center items-center ",
+                  "flex rounded-xl transition-all duration-200 size-10 justify-center items-center text-gray-400",
                   href === pathname && !comingSoon
-                    ? "bg-accent text-accent-foreground "
-                    : "hover:bg-secondary",
+                    ? "bg-[#00B4B4] text-white"
+                    : "hover:bg-white/10 hover:text-white",
                   comingSoon &&
-                    "opacity-50 cursor-not-allowed pointer-events-none"
+                    "opacity-40 cursor-not-allowed pointer-events-none"
                 )}
               >
-                <Icon size={22} />
+                <Icon size={20} />
               </Link>
             )
           )}
         </div>
-        {/* Company Switcher */}
-        <div className="px-2 py-3 border-t">
-          <CompanySwitcher isCollapsed={isCollapsed} />
+        {/* User Info with Dropdown */}
+        <div className="px-3 py-3 border-t border-white/10">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={cn(
+                  "w-full flex items-center gap-3 rounded-xl p-2 hover:bg-white/10 transition-colors",
+                  isCollapsed && "justify-center"
+                )}
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00B4B4] to-[#00a0a0] flex items-center justify-center text-sm font-bold text-white shrink-0">
+                  {user?.firstName?.[0] || "A"}{user?.lastName?.[0] || "G"}
+                </div>
+                {!isCollapsed && (
+                  <>
+                    <div className="flex flex-col text-left flex-1 min-w-0">
+                      <span className="text-white text-sm font-medium truncate">
+                        {user?.firstName && user?.lastName
+                          ? `${user.firstName} ${user.lastName}`
+                          : "Adam Greenwood"}
+                      </span>
+                      <span className="text-gray-500 text-xs truncate">
+                        {user?.email || "adam@example.com"}
+                      </span>
+                    </div>
+                    <ChevronUp size={16} className="text-gray-400 shrink-0" />
+                  </>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="top" className="w-56 mb-2">
+              <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
+                <User className="w-4 h-4 mr-2" />
+                Profile Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/account")}>
+                <DollarSign className="w-4 h-4 mr-2" />
+                Media Purchases
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => setLogoutModal(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+        <LogoutWidget
+          isOpen={logoutModal}
+          handleClose={() => setLogoutModal(false)}
+        />
         {/* Credits */}
         <div
           className={cn(
-            "text-xs  py-5 border-t text-center",
+            "text-xs py-4 border-t border-white/10 text-center text-gray-500",
             isCollapsed && "flex flex-col gap-2 items-center justify-center"
           )}
         >
           Powered by{" "}
           <img
-            src="/images/logo.png"
+            src="/images/hiway-logo-light.png"
             alt="Hiway"
             width={50}
-            height={50}
-            className="text-accent inline-block"
+            height={16}
+            className="inline-block ml-1"
           />
         </div>
       </aside>

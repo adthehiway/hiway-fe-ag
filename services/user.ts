@@ -1,5 +1,6 @@
 import { api } from "@/services/api";
 import { IUser, IUserReferral, IUserStats } from "@/types";
+import { MOCK_MODE, mockUserStats } from "@/lib/mock-data";
 
 export class ObjectService {
   private domain = "users";
@@ -13,6 +14,9 @@ export class ObjectService {
   }
 
   async getStats(): Promise<IUserStats> {
+    if (MOCK_MODE) {
+      return Promise.resolve(mockUserStats as IUserStats);
+    }
     return api.get<IUserStats>(`${this.domain}/me/stats`);
   }
 

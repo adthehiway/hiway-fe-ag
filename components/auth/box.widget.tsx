@@ -24,7 +24,7 @@ export function BoxWidget(props: Props) {
         {/* Logo */}
         <div className="mb-10 flex justify-center">
           <Image
-            src={"/images/hiway-logo.png"}
+            src={"/images/hiway-logo-dark.png"}
             alt="Hiway Logo"
             height={28}
             width={120}
@@ -33,7 +33,7 @@ export function BoxWidget(props: Props) {
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-medium text-gray-900 text-center tracking-tight">
+        <h1 className="text-2xl font-bold text-slate-900 text-center tracking-tight">
           {props.title}
         </h1>
 

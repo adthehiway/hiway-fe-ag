@@ -43,6 +43,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const DashboardPageContent = () => {
   const router = useRouter();
+  const { data: user } = useUser();
   const { data, isLoading, isError, isEmpty, error, refetch } =
     useDashboardOverview();
   const overviewData = data ?? null;
@@ -84,42 +85,55 @@ const DashboardPageContent = () => {
   };
 
   const getAnalyticsData = (key: string) => {
-    return overviewData?.analytics.find(
+    return overviewData?.analytics?.find(
       (item: { key: string }) => item.key === key
     );
   };
 
   return (
-    <div className="">
-      <PageTitle
-        title="Dashboard"
-        description="Welcome back. Congratulations. You’re on the Hiway"
-        content={
-          editMode ? (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
+    <div className="space-y-6">
+      {/* Welcome Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+            Welcome back, {user?.firstName || 'Creator'}
+          </h1>
+          <p className="text-slate-500 mt-1 text-sm">
+            Here's what's happening with your content today
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {editMode ? (
+            <>
+              <button
                 onClick={() => {
                   saveToLocalStorage("dashboard-layouts", layouts);
                   setEditMode((v) => !v);
                 }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-2xl bg-[#00B4B4] text-white hover:bg-[#00a0a0] transition-all duration-200"
               >
                 <Save className="h-4 w-4" />
                 Save Layout
-              </Button>
-              <Button variant="outline" onClick={handleResetLayout}>
+              </button>
+              <button
+                onClick={handleResetLayout}
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all duration-200"
+              >
                 <RefreshCcw className="h-4 w-4" />
-                Reset Layout
-              </Button>
-            </div>
+                Reset
+              </button>
+            </>
           ) : (
-            <Button variant="outline" onClick={() => setEditMode((v) => !v)}>
+            <button
+              onClick={() => setEditMode((v) => !v)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-2xl bg-white text-slate-700 hover:bg-slate-50 transition-all duration-200 border border-slate-200 shadow-sm"
+            >
               <Move className="h-4 w-4" />
-              Customize Layout
-            </Button>
-          )
-        }
-      />
+              Customize
+            </button>
+          )}
+        </div>
+      </div>
 
       <ResponsiveReactGridLayout
         layouts={layouts}
@@ -161,196 +175,136 @@ const DashboardPageContent = () => {
         />
         {analytics.map((item, index) =>
           isLoading ? (
-            <Card key={`analytics-${index}`} className="gap-3  ">
-              <CardHeader>
-                <Skeleton className="h-6 w-32 mb-2" />
-                <Skeleton className="h-4 w-24" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-10 w-24 mb-2" />
-              </CardContent>
-            </Card>
+            <div key={`analytics-${index}`} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+              <Skeleton className="h-5 w-24 mb-4" />
+              <Skeleton className="h-8 w-20 mb-2" />
+              <Skeleton className="h-4 w-32" />
+            </div>
           ) : (
-            <Card key={`analytics-${index}`} className="gap-3  ">
-              <CardHeader>
-                <CardTitle className="flex flex-row items-center gap-2 justify-between">
-                  {item.title}
-                  <item.icon className={`h-4 w-4 ${item.iconColor}`} />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold ">
-                  {formatNumber(getAnalyticsData(item.key)?.value ?? 0)}
+            <div key={`analytics-${index}`} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-slate-500 text-sm font-medium">{item.title}</span>
+                <div className="w-8 h-8 rounded-lg bg-[#00B4B4]/10 flex items-center justify-center">
+                  <item.icon className="h-4 w-4 text-[#00B4B4]" />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  <span className={`text-accent`}>
-                    {getAnalyticsData(item.key)?.change ?? 0}%
-                  </span>{" "}
-                  from last month
-                </p>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="text-3xl font-bold text-slate-900 mb-1">
+                {formatNumber(getAnalyticsData(item.key)?.value ?? 0)}
+              </div>
+              <div className="flex items-center gap-1 text-sm">
+                {(getAnalyticsData(item.key)?.change ?? 0) >= 0 ? (
+                  <TrendingUp className="h-3 w-3 text-emerald-500" />
+                ) : (
+                  <TrendingDown className="h-3 w-3 text-rose-500" />
+                )}
+                <span className={(getAnalyticsData(item.key)?.change ?? 0) >= 0 ? "text-emerald-600 font-medium" : "text-rose-600 font-medium"}>
+                  {(getAnalyticsData(item.key)?.change ?? 0) >= 0 ? "+" : ""}
+                  {getAnalyticsData(item.key)?.change ?? 0}%
+                </span>
+                <span className="text-slate-400">from last month</span>
+              </div>
+            </div>
           )
         )}
         {isLoading ? (
-          <Card key="revenueOverview">
-            <CardHeader>
-              <Skeleton className="h-6 w-40 mb-2" />
-              <Skeleton className="h-4 w-64" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Skeleton className="h-8 w-24 mb-2" />
+          <div key="revenueOverview" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <Skeleton className="h-6 w-40 mb-2" />
+            <Skeleton className="h-4 w-64 mb-6" />
+            <div className="space-y-4">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <Skeleton className="h-4 w-8" />
+                  <Skeleton className="h-2 w-full rounded-full" />
                   <Skeleton className="h-4 w-16" />
                 </div>
-                <Skeleton className="h-6 w-16" />
-              </div>
-              <div className="space-y-2">
-                {[...Array(12)].map((_, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <Skeleton className="h-4 w-8" />
-                    <Skeleton className="h-2 w-full rounded-full" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t ">
-                {[...Array(3)].map((_, index) => (
-                  <div key={index} className="text-center">
-                    <Skeleton className="h-6 w-16 mb-2" />
-                    <Skeleton className="h-4 w-20" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          </div>
         ) : (
-          <Card key="revenueOverview">
-            <CardHeader>
-              <CardTitle>Revenue Overview</CardTitle>
-              <CardDescription>
-                Monthly revenue from premium content
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold ">
-                    ${formatNumber(overviewData?.revenueOverview.currentMonth.value ?? 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">This month</p>
-                </div>
-                <div className="flex items-center gap-1 text-accent">
-                  {overviewData?.revenueOverview.currentMonth.change &&
-                  overviewData?.revenueOverview.currentMonth.change > 0 ? (
-                    <TrendingUp size={16} />
+          <div key="revenueOverview" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Revenue Overview</h3>
+                <p className="text-sm text-slate-500">Monthly revenue from premium content</p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-slate-900">
+                  ${formatNumber(overviewData?.revenueOverview?.currentMonth?.value ?? 0)}
+                </p>
+                <div className="flex items-center justify-end gap-1 mt-1">
+                  {(overviewData?.revenueOverview?.currentMonth?.change ?? 0) > 0 ? (
+                    <TrendingUp size={14} className="text-emerald-500" />
                   ) : (
-                    <TrendingDown size={16} />
+                    <TrendingDown size={14} className="text-rose-500" />
                   )}
-                  <span className="text-sm font-medium">
-                    {overviewData?.revenueOverview.currentMonth.change &&
-                    overviewData?.revenueOverview.currentMonth.change > 0
-                      ? "+"
-                      : ""}
-                    {overviewData?.revenueOverview.currentMonth.change ?? 0}%
+                  <span className={(overviewData?.revenueOverview?.currentMonth?.change ?? 0) > 0 ? "text-emerald-600 text-sm font-medium" : "text-rose-600 text-sm font-medium"}>
+                    {(overviewData?.revenueOverview?.currentMonth?.change ?? 0) > 0 ? "+" : ""}
+                    {overviewData?.revenueOverview?.currentMonth?.change ?? 0}%
                   </span>
                 </div>
               </div>
-              <div className="space-y-2">
-                {overviewData?.revenueOverview.monthly.map(
-                  (item: { label: string; value: number }, index: number) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <span className="text-sm text-muted-foreground w-8">
-                        {item.label}
-                      </span>
-                      <div className="flex-1 bg-muted/50 rounded-full h-2 relative overflow-hidden">
-                        <div
-                          className="bg-accent h-full rounded-full transition-all duration-500"
-                          style={{ width: `${item.value * 100}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-white w-16 text-right">
-                        ${formatNumber(item.value)}
-                      </span>
+            </div>
+            <div className="space-y-3">
+              {overviewData?.revenueOverview?.monthly?.map(
+                (item: { label: string; value: number }, index: number) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <span className="text-sm text-slate-500 w-10">
+                      {item.label}
+                    </span>
+                    <div className="flex-1 bg-slate-100 rounded-full h-2 relative overflow-hidden">
+                      <div
+                        className="bg-gradient-to-r from-[#00B4B4] to-[#00d4d4] h-full rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min((item.value / 3000) * 100, 100)}%` }}
+                      />
                     </div>
-                  )
-                )}
+                    <span className="text-sm text-slate-900 w-16 text-right font-medium">
+                      ${formatNumber(item.value)}
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
+            <div className="grid grid-cols-3 gap-4 pt-5 mt-5 border-t border-slate-100">
+              <div className="text-center">
+                <p className="text-xl font-bold text-slate-900">
+                  ${formatNumber(overviewData?.revenueOverview?.projectedAnnual ?? 0)}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">Projected Annual</p>
               </div>
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t ">
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-white">
-                    ${formatNumber(overviewData?.revenueOverview.projectedAnnual ?? 0)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Projected Annual
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-white">
-                    ${formatNumber(overviewData?.revenueOverview.avgMonthly ?? 0)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Avg Monthly</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-accent">
-                    +{overviewData?.revenueOverview.avgGrowth ?? 0}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">Avg Growth</p>
-                </div>
+              <div className="text-center">
+                <p className="text-xl font-bold text-slate-900">
+                  ${formatNumber(overviewData?.revenueOverview?.avgMonthly ?? 0)}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">Avg Monthly</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="text-center">
+                <p className="text-xl font-bold text-emerald-600">
+                  +{overviewData?.revenueOverview?.avgGrowth ?? 0}%
+                </p>
+                <p className="text-xs text-slate-500 mt-1">Avg Growth</p>
+              </div>
+            </div>
+          </div>
         )}
 
-        <Card key="topContent">
-          {isLoading ? (
-            <CardHeader>
-              <Skeleton className="h-6 w-40 mb-2" />
-              <Skeleton className="h-4 w-64" />
-            </CardHeader>
-          ) : (
-            <CardHeader>
-              <CardTitle>Top Performing Content</CardTitle>
-              <CardDescription>
-                Your highest engagement and revenue generating content
-              </CardDescription>
-            </CardHeader>
-          )}
-          <CardContent className="space-y-4">
+        <div key="topContent" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div className="mb-5">
+            <h3 className="text-lg font-semibold text-slate-900">Top Performing Content</h3>
+            <p className="text-sm text-slate-500">Your highest engagement and revenue generating content</p>
+          </div>
+          <div className="space-y-3">
             {isLoading ? (
               <>
                 {[...Array(3)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border "
-                  >
+                  <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
                     <Skeleton className="w-8 h-8 rounded-full" />
                     <Skeleton className="w-8 h-8 rounded-full" />
-                    <div className="flex-1 min-w-0 space-y-2">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <Skeleton className="h-5 w-32 mb-1" />
-                          <div className="flex items-center gap-3">
-                            <Skeleton className="h-4 w-12" />
-                          </div>
-                        </div>
-                        <div className="flex-shrink-0 text-right">
-                          <Skeleton className="h-5 w-16 mb-1" />
-                          <Skeleton className="h-3 w-12" />
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Skeleton className="h-5 w-16 rounded-full" />
-                          <Skeleton className="h-5 w-12 rounded-full" />
-                        </div>
-                        <Skeleton className="w-8 h-8 rounded-full" />
-                      </div>
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-4 w-24" />
                     </div>
                   </div>
                 ))}
-                <Skeleton className="h-10 w-full mt-3" />
               </>
             ) : (
               <>
@@ -370,21 +324,21 @@ const DashboardPageContent = () => {
                     ) => (
                       <div
                         key={index}
-                        className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border "
+                        className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-all duration-200"
                       >
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent flex items-center justify-center text-sm font-bold text-accent-foreground">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#0f172a] flex items-center justify-center text-sm font-bold text-white">
                           {index + 1}
                         </div>
-                        <button className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-accent flex items-center justify-center text-accent transition-colors">
+                        <button className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-[#00B4B4] flex items-center justify-center text-[#00B4B4] hover:bg-[#00B4B4]/10 transition-colors">
                           <Play size={14} />
                         </button>
                         <div className="flex-1 min-w-0 space-y-2">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-medium  truncate text-sm mb-1">
+                              <h4 className="font-medium text-slate-900 truncate text-sm mb-1">
                                 {item.title}
                               </h4>
-                              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-3 text-sm text-slate-500">
                                 <span className="flex items-center gap-1">
                                   <Eye size={12} />
                                   {formatNumber(item.views)}
@@ -392,10 +346,10 @@ const DashboardPageContent = () => {
                               </div>
                             </div>
                             <div className="flex-shrink-0 text-right">
-                              <div className="text-accent font-bold text-sm">
+                              <div className="text-emerald-600 font-bold text-sm">
                                 ${formatNumber(item.revenue)}
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-slate-400">
                                 revenue
                               </div>
                             </div>
@@ -403,17 +357,17 @@ const DashboardPageContent = () => {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               {item.genre && (
-                                <div className=" text-xs px-2 py-1 bg-blue-400 rounded-full ">
+                                <div className="text-xs px-2 py-1 bg-[#0f172a]/10 text-[#0f172a] rounded-full font-medium">
                                   {item.genre}
                                 </div>
                               )}
                               {item.rating && (
-                                <div className="text-xs px-3 py-1 border border-accent rounded-full text-accent">
+                                <div className="text-xs px-3 py-1 border border-amber-300 bg-amber-50 rounded-full text-amber-700 font-medium">
                                   {item.rating}
                                 </div>
                               )}
                             </div>
-                            <Button size="iconSm" variant={"ghost"}>
+                            <Button size="iconSm" variant={"ghost"} className="text-slate-400 hover:text-slate-900 hover:bg-slate-200">
                               <Ellipsis size={16} />
                             </Button>
                           </div>
@@ -422,20 +376,20 @@ const DashboardPageContent = () => {
                     )
                   )
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                    You top performing content will appear here
+                  <div className="flex flex-col items-center justify-center py-8 text-slate-400">
+                    Your top performing content will appear here
                   </div>
                 )}
-                <Button
-                  className="w-full mt-3"
+                <button
+                  className="w-full mt-4 py-3 rounded-xl bg-[#0f172a] hover:bg-[#1e293b] text-white font-semibold text-sm transition-all duration-200"
                   onClick={() => router.push("/dashboard/content-library")}
                 >
                   View All Content Analytics
-                </Button>
+                </button>
               </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </ResponsiveReactGridLayout>
       <VideoUploadModal
         isOpen={uploadModelOpen}

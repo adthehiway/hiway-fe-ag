@@ -134,7 +134,7 @@ const SmartLinksPageContent = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-white mb-2">
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">
             {isError ? "Failed to load SmartLinks" : "Failed to load analytics"}
           </h3>
           <p className="text-muted-foreground mb-4">
@@ -245,13 +245,13 @@ const SmartLinksPageContent = () => {
           : analytics.map((item, index) => (
               <Card key={`analytics-${index}`}>
                 <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="tracking-tight text-sm font-medium text-white">
+                  <CardTitle className="tracking-tight text-sm font-medium text-slate-900">
                     {item.title}
                   </CardTitle>
                   <item.icon className={`h-4 w-4 ${item.iconColor}`} />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-white ">
+                  <div className="text-3xl font-bold text-slate-900">
                     {item.currency && "$"} {formatNumber(item.value)}{" "}
                     {item.percentage && "%"}
                   </div>
@@ -447,7 +447,7 @@ const SmartLinksPageContent = () => {
                         <th className="py-3 px-6 font-semibold"></th>
                       </tr>
                     </thead>
-                    <tbody className="text-white text-sm">
+                    <tbody className="text-slate-900 text-sm">
                       {smartLinks.map((link) => (
                         <tr key={link.id} className="border-b ">
                           <td className="py-3 px-6 font-medium">

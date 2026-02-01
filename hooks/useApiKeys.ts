@@ -7,15 +7,16 @@ import {
   RevokeApiKeyResponse,
 } from "@/types";
 import { toast } from "react-toastify";
+import { MOCK_MODE, mockApiKeys } from "@/lib/mock-data";
 
 export function useApiKeys(companyId: string | undefined) {
   return useQuery<ApiKeyResponseDto[]>({
     queryKey: ["api-keys", companyId],
-    queryFn: () => ApiKeysService.listApiKeys(companyId!),
+    queryFn: () => MOCK_MODE ? Promise.resolve(mockApiKeys as ApiKeyResponseDto[]) : ApiKeysService.listApiKeys(companyId!),
     enabled: !!companyId,
-    staleTime: 2 * 60 * 1000,
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: !MOCK_MODE,
   });
 }
 

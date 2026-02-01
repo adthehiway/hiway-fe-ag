@@ -123,7 +123,7 @@ const SmartRoomsPageContent = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-white mb-2">
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">
             {isError
               ? "Failed to load Smart Rooms"
               : "Failed to load analytics"}
@@ -252,13 +252,13 @@ const SmartRoomsPageContent = () => {
           : analytics.map((item, index) => (
               <Card key={`analytics-${index}`}>
                 <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="tracking-tight text-sm font-medium text-white">
+                  <CardTitle className="tracking-tight text-sm font-medium text-slate-900">
                     {item.title}
                   </CardTitle>
                   <item.icon className={`h-4 w-4 ${item.iconColor}`} />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-white">
+                  <div className="text-3xl font-bold text-slate-900">
                     {item.currency && "$"} {formatNumber(item.value)} {item.percentage && "%"}
                   </div>
                   <p className={`text-muted-foreground text-sm`}>{item.text}</p>
@@ -333,30 +333,30 @@ const SmartRoomsPageContent = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b text-left">
-                      <th className="py-3 px-6 font-semibold text-white">
+                      <th className="py-3 px-6 font-semibold text-slate-900">
                         Name
                       </th>
-                      <th className="py-3 px-6 font-semibold text-white">
+                      <th className="py-3 px-6 font-semibold text-slate-900">
                         Slug
                       </th>
-                      <th className="py-3 px-6 font-semibold text-white">
+                      <th className="py-3 px-6 font-semibold text-slate-900">
                         Access
                       </th>
-                      <th className="py-3 px-6 font-semibold text-white">
+                      <th className="py-3 px-6 font-semibold text-slate-900">
                         Media Items
                       </th>
-                      <th className="py-3 px-6 font-semibold text-white">
+                      <th className="py-3 px-6 font-semibold text-slate-900">
                         Price
                       </th>
-                      <th className="py-3 px-6 font-semibold text-white">
+                      <th className="py-3 px-6 font-semibold text-slate-900">
                         Created
                       </th>
-                      <th className="py-3 px-6 font-semibold text-white">
+                      <th className="py-3 px-6 font-semibold text-slate-900">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="text-white text-sm">
+                  <tbody className="text-slate-900 text-sm">
                     {smartRooms.map((room) => {
                       const AccessIcon = getAccessIcon(room.access);
                       return (

@@ -15,6 +15,7 @@ import {
 } from "@/types";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "@/lib/utils";
+import { MOCK_MODE, mockCompanyMembers, mockCompanyInvitations } from "@/lib/mock-data";
 
 // Hook for fetching company invitations with pagination
 export function useCompanyInvitations(
@@ -25,9 +26,11 @@ export function useCompanyInvitations(
   return useQuery({
     queryKey: ["company-invitations", companyId, page, limit],
     queryFn: () =>
-      InvitationService.getCompanyInvitations(companyId!, { page, limit }),
+      MOCK_MODE
+        ? Promise.resolve(mockCompanyInvitations as any)
+        : InvitationService.getCompanyInvitations(companyId!, { page, limit }),
     enabled: !!companyId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -177,9 +180,12 @@ export function useCompanyMembers(
 ) {
   return useQuery({
     queryKey: ["company-members", companyId, params],
-    queryFn: () => InvitationService.getCompanyMembers(companyId!, params),
+    queryFn: () =>
+      MOCK_MODE
+        ? Promise.resolve(mockCompanyMembers as any)
+        : InvitationService.getCompanyMembers(companyId!, params),
     enabled: !!companyId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });

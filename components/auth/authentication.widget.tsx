@@ -169,16 +169,16 @@ function AuthenticationWidgetContent({
       {loading && <Loader />}
 
       {/* Subtitle */}
-      <p className="text-gray-400 text-sm text-center mb-8">
+      <p className="text-slate-500 text-sm text-center mb-8">
         {text} {link}
       </p>
 
       {invitationInfo && (
-        <div className="mb-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+        <div className="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#00B4B4]/10 flex items-center justify-center shrink-0">
               <svg
-                className="w-4 h-4 text-indigo-600"
+                className="w-4 h-4 text-[#00B4B4]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -192,16 +192,16 @@ function AuthenticationWidgetContent({
               </svg>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-slate-900">
                 You've been invited!
               </p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-slate-500">
                 {invitationInfo.companyName} has invited you to join as{" "}
                 {invitationInfo.role}
               </p>
             </div>
           </div>
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-slate-500">
             Please sign in or create an account to accept this invitation.
           </p>
         </div>
@@ -210,7 +210,7 @@ function AuthenticationWidgetContent({
       {/* Form */}
       <div className="w-full space-y-5">
         <div>
-          <label className="block text-sm text-gray-600 mb-2">
+          <label className="block text-sm text-slate-600 mb-2">
             Email address
           </label>
           <input
@@ -218,10 +218,10 @@ function AuthenticationWidgetContent({
             placeholder="johndoe@example.com"
             onChange={(e) => checkEmail(e.target.value)}
             value={email}
-            className="w-full px-5 py-3.5 rounded-full border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all text-sm"
+            className="w-full px-5 py-3.5 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00B4B4] focus:border-transparent focus:bg-white transition-all text-sm"
           />
           {submitError && (
-            <p className="mt-2 text-sm text-red-600">{submitError}</p>
+            <p className="mt-2 text-sm text-rose-500">{submitError}</p>
           )}
         </div>
 
@@ -229,7 +229,7 @@ function AuthenticationWidgetContent({
         <button
           disabled={disabled}
           onClick={handleEmailLogin}
-          className="w-full py-3.5 px-6 rounded-full font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[#E8D44D] hover:bg-[#dcc842] text-gray-900 text-sm"
+          className="w-full py-3.5 px-6 rounded-2xl font-semibold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed bg-[#0f172a] hover:bg-[#1e293b] active:scale-[0.98] text-white text-sm"
         >
           {button}
         </button>
@@ -237,23 +237,23 @@ function AuthenticationWidgetContent({
 
       {/* Divider */}
       <div className="flex items-center w-full my-8">
-        <hr className="w-full h-px bg-gray-200 border-0" />
-        <span className="px-4 text-xs text-gray-400 whitespace-nowrap uppercase tracking-wide">
+        <hr className="w-full h-px bg-slate-200 border-0" />
+        <span className="px-4 text-xs text-slate-400 whitespace-nowrap uppercase tracking-wide">
           Or continue with
         </span>
-        <hr className="w-full h-px bg-gray-200 border-0" />
+        <hr className="w-full h-px bg-slate-200 border-0" />
       </div>
 
       {/* Social Login Buttons */}
       <div className="flex gap-3 w-full justify-center">
         <button
           onClick={handleGoogleLogin}
-          className="w-12 h-12 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition-all"
+          className="w-12 h-12 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
         >
           <Icon name="google" className="size-5" />
         </button>
         <button
-          className="w-12 h-12 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition-all"
+          className="w-12 h-12 flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all text-slate-900 shadow-sm"
         >
           <svg className="size-5" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -262,19 +262,19 @@ function AuthenticationWidgetContent({
       </div>
 
       {/* Footer Links */}
-      <div className="flex flex-row text-xs items-center justify-center gap-3 mt-10 text-gray-400">
+      <div className="flex flex-row text-xs items-center justify-center gap-3 mt-10 text-slate-400">
         <Link
           href="https://www.onthehiway.com/privacy-policy"
           target="_blank"
-          className="hover:text-gray-600 transition-colors"
+          className="hover:text-[#00B4B4] transition-colors"
         >
           Privacy
         </Link>
-        <span className="text-gray-300">•</span>
+        <span className="text-slate-300">•</span>
         <Link
           href="https://www.onthehiway.com/terms-and-conditions"
           target="_blank"
-          className="hover:text-gray-600 transition-colors"
+          className="hover:text-[#00B4B4] transition-colors"
         >
           Terms
         </Link>

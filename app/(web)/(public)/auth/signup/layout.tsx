@@ -1,6 +1,5 @@
 "use client";
 
-import { Slider } from "@/components/auth/slider";
 import Image from "next/image";
 
 export default function SignupLayout({
@@ -9,25 +8,29 @@ export default function SignupLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex flex-col md:flex-row h-full min-h-[768px]">
-      <div className="w-full hidden md:block md:w-1/2 h-full p-2 sm:p-4 md:p-6 lg:p-8">
-        {/* <Slider
-          images={["/images/auth-0.png", "/images/auth-1.png", "/images/auth-2.png"]}
-          // title="Finally content you can control"
-          subtitle="Lorem ipsum dolor sit amet"
-        /> */}
-        <div className="w-full h-full flex overflow-hidden rounded-[8px] relative">
-          <Image
-            src={"/images/auth.png"}
-            alt="auth"
-            fill
-            className="object-cover"
-          />
+    // Outer light background
+    <div className="h-screen w-screen bg-slate-100 p-3 md:p-4 overflow-hidden">
+      {/* Navy frame */}
+      <div className="h-full w-full bg-[#0f172a] rounded-[2rem] p-3 md:p-4 flex gap-3 md:gap-4">
+        {/* Left side - Image card */}
+        <div className="hidden md:block w-1/2">
+          <div className="h-full w-full overflow-hidden rounded-[1.5rem] relative">
+            <Image
+              src={"/images/auth.png"}
+              alt="auth"
+              fill
+              className="object-cover"
+            />
+          </div>
+        </div>
+
+        {/* Right side - Form card */}
+        <div className="flex-1 bg-white rounded-[1.5rem] shadow-xl flex items-center justify-center p-6 md:p-12">
+          <div className="w-full max-w-md">
+            {children}
+          </div>
         </div>
       </div>
-      <div className="relative w-full md:w-1/2 h-full p-4 sm:p-8 flex items-center justify-center">
-        {children}
-      </div>
-    </main>
+    </div>
   );
 }
