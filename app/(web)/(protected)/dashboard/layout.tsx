@@ -29,14 +29,19 @@ export default function DashboardLayout({
               <Sidebar />
             </div>
 
-            {/* Main content - white card inside navy frame */}
-            <main className="flex-1 bg-white rounded-[1.5rem] shadow-xl overflow-hidden flex flex-col">
+            {/* Main content area with tabs above */}
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* Header with tabs - sits on navy frame */}
               <Header />
-              <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-slate-50/50">
-                <StripeOnboardingBanner />
-                {children}
-              </div>
-            </main>
+
+              {/* Content card - tabs connect to top, color matches tab */}
+              <main className="flex-1 bg-slate-50 rounded-b-[1.5rem] rounded-tr-[1.5rem] shadow-xl overflow-hidden flex flex-col">
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+                  <StripeOnboardingBanner />
+                  {children}
+                </div>
+              </main>
+            </div>
           </div>
         </div>
         <UploadProgressWidget />
