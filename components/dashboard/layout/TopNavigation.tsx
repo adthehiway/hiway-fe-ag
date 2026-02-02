@@ -30,10 +30,10 @@ export function TopNavigation() {
 
         return (
           <div key={category.id} className="relative flex items-end">
-            {/* Left curved foot - moved up */}
+            {/* Left curved foot - aligned with content area top */}
             {isActive && (
               <div
-                className="w-3 h-3 self-end -mb-[1px]"
+                className="w-3 h-3 self-end -translate-y-[1px]"
                 style={{
                   background: `radial-gradient(circle at 0% 0%, #0f172a 12px, #f8fafc 12px)`,
                 }}
@@ -45,7 +45,7 @@ export function TopNavigation() {
               className={cn(
                 "relative flex items-center justify-center gap-2 px-5 h-8 text-sm font-medium transition-all duration-200 rounded-t-lg",
                 isActive
-                  ? "text-gray-700 bg-slate-50 z-20"
+                  ? "text-gray-700 bg-slate-50 z-20 -translate-y-[1px]"
                   : "text-white/60 hover:text-white/80 z-10"
               )}
             >
@@ -53,10 +53,10 @@ export function TopNavigation() {
               <span className="relative z-10">{category.label}</span>
             </button>
 
-            {/* Right curved foot - moved up */}
+            {/* Right curved foot - aligned with content area top */}
             {isActive && (
               <div
-                className="w-3 h-3 self-end -mb-[1px]"
+                className="w-3 h-3 self-end -translate-y-[1px]"
                 style={{
                   background: `radial-gradient(circle at 100% 0%, #0f172a 12px, #f8fafc 12px)`,
                 }}
