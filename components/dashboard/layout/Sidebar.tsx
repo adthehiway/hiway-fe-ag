@@ -13,7 +13,7 @@ import { hasAnyPermission, hasPermission } from "@/lib/permissions";
 import { Menu, X, User, DollarSign, LogOut, ChevronUp, ChevronDown, Check, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import {
   DropdownMenu,
@@ -61,6 +61,8 @@ export const Sidebar: React.FC = () => {
   } = useSidebar();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentSection = searchParams.get("section");
   const { data: company } = useCompany();
   const { data: user } = useUser();
   const effectiveRole = useEffectiveRole();
@@ -287,42 +289,121 @@ export const Sidebar: React.FC = () => {
             isCollapsed ? "items-center" : "items-start w-full"
           )}
         >
-          {filteredNavItems.map(({ label, icon: Icon, comingSoon, href }) => (
-            <Link
-              href={comingSoon ? "#" : href || ""}
-              key={label}
-              onClick={() => {
-                // Close sidebar on mobile when link is clicked
-                if (window.innerWidth < 1024) {
-                  closeSidebar();
-                }
-              }}
-              className={cn(
-                "flex items-center gap-3 rounded-2xl transition-all duration-200 whitespace-nowrap",
-                isActive(href || "") && !comingSoon
-                  ? "bg-[#00B4B4] text-white shadow-lg shadow-[#00B4B4]/20"
-                  : "text-gray-400",
-                !comingSoon && !isActive(href || "") && "hover:bg-white/10 hover:text-white",
-                isCollapsed
-                  ? "justify-center size-10"
-                  : "px-3 py-2.5 w-full justify-start",
-                comingSoon &&
-                  "opacity-40 cursor-not-allowed pointer-events-none"
-              )}
-            >
-              <Icon size={20} className="shrink-0" />
-              {!isCollapsed && (
-                <span className="flex flex-col">
-                  <span className="font-medium text-sm">{label}</span>
-                  {comingSoon && (
-                    <span className="text-xs text-gray-500 leading-tight">
-                      Coming Soon
-                    </span>
-                  )}
-                </span>
-              )}
-            </Link>
-          ))}
+          {filteredNavItems.map(({ label, icon: Icon, comingSoon, href, childGroups }) => {
+            const hasChildGroups = childGroups && childGroups.length > 0;
+
+            // For items with child groups (like Analytics), render the grouped list
+            if (hasChildGroups && !isCollapsed) {
+              return (
+                <div key={label} className="w-full space-y-3">
+                  {childGroups.map((group) => (
+                    <div key={group.groupLabel}>
+                      <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-3 mb-1">
+                        {group.groupLabel}
+                      </div>
+                      <div className="space-y-0.5">
+                        {group.items.map((child) => {
+                          const childPath = child.href.split("?")[0];
+                          const childSection = new URLSearchParams(child.href.split("?")[1] || "").get("section");
+                          const isChildItemActive = pathname.startsWith(childPath) && (!childSection || childSection === currentSection || (!currentSection && childSection === "analytics-overview"));
+                          const ChildIcon = child.icon;
+
+                          return (
+                            <Link
+                              key={child.label}
+                              href={child.href}
+                              onClick={() => {
+                                if (window.innerWidth < 1024) {
+                                  closeSidebar();
+                                }
+                              }}
+                              className={cn(
+                                "flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-all duration-200",
+                                isChildItemActive
+                                  ? "bg-[#00B4B4] text-white"
+                                  : "text-gray-400 hover:bg-white/10 hover:text-white"
+                              )}
+                            >
+                              {ChildIcon && <ChildIcon size={16} className="shrink-0" />}
+                              <span>{child.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+
+            // For collapsed sidebar with child groups, show all child icons
+            if (hasChildGroups && isCollapsed) {
+              // Flatten all items from all groups
+              const allItems = childGroups.flatMap(group => group.items);
+              return (
+                <div key={label} className="flex flex-col items-center gap-1">
+                  {allItems.map((child) => {
+                    const childPath = child.href.split("?")[0];
+                    const childSection = new URLSearchParams(child.href.split("?")[1] || "").get("section");
+                    const isChildItemActive = pathname.startsWith(childPath) && (!childSection || childSection === currentSection || (!currentSection && childSection === "analytics-overview"));
+                    const ChildIcon = child.icon;
+
+                    return (
+                      <Link
+                        key={child.label}
+                        href={child.href}
+                        title={child.label}
+                        className={cn(
+                          "flex items-center justify-center rounded-xl transition-all duration-200 size-10",
+                          isChildItemActive
+                            ? "bg-[#00B4B4] text-white"
+                            : "text-gray-400 hover:bg-white/10 hover:text-white"
+                        )}
+                      >
+                        {ChildIcon && <ChildIcon size={18} className="shrink-0" />}
+                      </Link>
+                    );
+                  })}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                href={comingSoon ? "#" : href || ""}
+                key={label}
+                onClick={() => {
+                  if (window.innerWidth < 1024) {
+                    closeSidebar();
+                  }
+                }}
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl transition-all duration-200 whitespace-nowrap",
+                  isActive(href || "") && !comingSoon
+                    ? "bg-[#00B4B4] text-white shadow-lg shadow-[#00B4B4]/20"
+                    : "text-gray-400",
+                  !comingSoon && !isActive(href || "") && "hover:bg-white/10 hover:text-white",
+                  isCollapsed
+                    ? "justify-center size-10"
+                    : "px-3 py-2.5 w-full justify-start",
+                  comingSoon &&
+                    "opacity-40 cursor-not-allowed pointer-events-none"
+                )}
+              >
+                <Icon size={20} className="shrink-0" />
+                {!isCollapsed && (
+                  <span className="flex flex-col">
+                    <span className="font-medium text-sm">{label}</span>
+                    {comingSoon && (
+                      <span className="text-xs text-gray-500 leading-tight">
+                        Coming Soon
+                      </span>
+                    )}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
         {/* Bottom actions (optional) */}
         <div

@@ -44,7 +44,7 @@ export const topNavCategories: TopNavCategory[] = [
 
 // Map category IDs to sidebar item labels
 export const categoryItemsMap: Record<string, string[]> = {
-  content: ["Dashboard", "Upload", "Content Library", "SmartLinks", "SmartRoom"],
+  content: ["Dashboard", "Upload", "Content Library", "SmartLinks", "SmartRoom", "Live Stream", "Syndication"],
   marketing: ["CRM"],
   analytics: ["Analytics"],
 };
@@ -58,7 +58,11 @@ export function getCategoryForPath(pathname: string): string {
     "/dashboard/content-library": "content",
     "/dashboard/smartlinks": "content",
     "/dashboard/smartrooms": "content",
+    "/dashboard/live-stream": "content",
     "/dashboard/crm": "marketing",
+    "/dashboard/crm/b2b": "marketing",
+    "/dashboard/crm/d2c": "marketing",
+    "/dashboard/syndication": "content",
     "/dashboard/analytics": "analytics",
     "/dashboard/settings": "content", // Settings accessible from any category
     "/dashboard/referrals": "content",
