@@ -17,10 +17,10 @@ export default function DashboardLayout({
   return (
     <NavigationProvider>
       <MediaManagerProvider>
-        {/* Outer light background */}
-        <div className="h-screen w-screen bg-slate-100 p-3 md:p-4 overflow-hidden">
-          {/* Navy frame - wraps everything */}
-          <div className="h-full w-full bg-[#0f172a] rounded-[2rem] p-3 md:p-4 flex gap-3 md:gap-4">
+        {/* Outer background - always white */}
+        <div className="h-screen w-screen bg-white p-3 md:p-4 overflow-hidden">
+          {/* Frame - wraps everything */}
+          <div className="h-full w-full bg-sidebar rounded-[2rem] p-3 md:p-4 flex gap-3 md:gap-4">
             {/* Sidebar area */}
             <div className={cn(
               "flex-shrink-0 transition-all duration-300 hidden lg:block",
@@ -31,11 +31,11 @@ export default function DashboardLayout({
 
             {/* Main content area with tabs above */}
             <div className="flex-1 flex flex-col min-h-0">
-              {/* Header with tabs - sits on navy frame */}
+              {/* Header with tabs - sits on frame */}
               <Header />
 
               {/* Content card - tabs connect to top, color matches tab */}
-              <main className="flex-1 bg-slate-50 rounded-b-[1.5rem] rounded-tr-[1.5rem] shadow-xl overflow-hidden flex flex-col">
+              <main className="flex-1 bg-slate-50 dark:bg-muted rounded-[1.5rem] shadow-xl overflow-hidden flex flex-col">
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
                   <StripeOnboardingBanner />
                   {children}
