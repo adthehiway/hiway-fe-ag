@@ -48,14 +48,15 @@ const LatestUpload = ({
           </CardContent>
         </Card>
       ) : overviewData?.recentMedia ? (
-        <Card {...props}>
-          <CardHeader>
-            <CardTitle>Latest Upload</CardTitle>
-            <CardDescription>Your most recent video content</CardDescription>
+        <Card {...props} className="h-full flex flex-col overflow-hidden">
+          <CardHeader className="flex-shrink-0 pb-2">
+            <CardTitle className="text-base">Latest Upload</CardTitle>
+            <CardDescription className="text-xs">Your most recent video content</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-3">
-              <div className="relative aspect-video bg-muted/50 rounded-lg overflow-hidden">
+          <CardContent className="pt-0 flex-1 flex flex-col min-h-0 overflow-hidden">
+            <div className="flex flex-col h-full gap-2">
+              {/* Thumbnail - takes available space but can shrink */}
+              <div className="relative flex-1 min-h-[80px] bg-muted/50 rounded-lg overflow-hidden">
                 {overviewData?.recentMedia.cfThumbnail && process.env.NEXT_PUBLIC_CONTENT_FABRIC_BASE_URL_STATICS ? (
                   <img
                     src={`${process.env.NEXT_PUBLIC_CONTENT_FABRIC_BASE_URL_STATICS}${overviewData?.recentMedia.cfThumbnail}?width=270`}
@@ -64,34 +65,36 @@ const LatestUpload = ({
                   />
                 ) : (
                   <div className="w-full h-full absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
-                    <Play className="size-12 text-slate-400" />
+                    <Play className="size-10 text-slate-400" />
                   </div>
                 )}
-                <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-12 flex items-center justify-center rounded-full bg-muted">
-                  <Play size={20} />
+                <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-10 flex items-center justify-center rounded-full bg-muted/90">
+                  <Play size={16} />
                 </button>
-                <div className="absolute bottom-2 right-2">
-                  <div className="inline-flex items-center rounded-full  px-2 py-0.5 text-xs font-semibold  bg-muted text-white">
-                    <Clock size={12} className="mr-2" />
+                <div className="absolute bottom-1.5 right-1.5">
+                  <div className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold bg-muted text-white">
+                    <Clock size={10} className="mr-1" />
                     {secondsToHHMMSS(
                       overviewData?.recentMedia.source?.duration ?? 0
                     )}
                   </div>
                 </div>
-                <div className="absolute top-2 left-2">
-                  <div className="inline-flex items-center rounded-full  px-2 py-0.5 text-xs font-semibold  bg-yellow-500 text-accent-foreground">
+                <div className="absolute top-1.5 left-1.5">
+                  <div className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold bg-yellow-500 text-accent-foreground">
                     {overviewData?.recentMedia.status}
                   </div>
                 </div>
               </div>
-              <div className="space-y-1">
-                <h3 className="font-medium text-slate-900 line-clamp-1 text-sm">
+
+              {/* Info section - fixed height */}
+              <div className="flex-shrink-0 space-y-0.5">
+                <h3 className="font-medium text-foreground line-clamp-1 text-sm">
                   {overviewData?.recentMedia.metadata?.title}
                 </h3>
                 <p className="text-xs text-slate-500 line-clamp-1">
                   {overviewData?.recentMedia.metadata?.description}
                 </p>
-                <div className="flex items-center justify-between text-xs text-slate-500">
+                <div className="flex items-center justify-between text-[10px] text-slate-500">
                   <span>
                     Uploaded{" "}
                     {new Date(
@@ -99,15 +102,17 @@ const LatestUpload = ({
                     ).toLocaleDateString()}
                   </span>
                   <div className="flex items-center gap-1">
-                    <Eye size={12} />
+                    <Eye size={10} />
                     {overviewData?.recentMedia.totalViews} views
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2 pt-1">
+
+              {/* Buttons - fixed height */}
+              <div className="flex-shrink-0 flex gap-2">
                 <Button
                   variant={"secondary"}
-                  className="flex-1"
+                  className="flex-1 text-xs h-8"
                   size="sm"
                   onClick={() =>
                     router.push(
@@ -115,10 +120,10 @@ const LatestUpload = ({
                     )
                   }
                 >
-                  Edit Details
+                  Edit
                 </Button>
                 <Button
-                  className="flex-1"
+                  className="flex-1 text-xs h-8"
                   size="sm"
                   onClick={() =>
                     router.push(

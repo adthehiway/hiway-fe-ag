@@ -93,12 +93,12 @@ const DashboardPageContent = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-700">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground dark:text-white tracking-tight">
             Welcome back, {user?.firstName || 'Creator'}
           </h1>
-          <p className="text-slate-500 mt-1 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
             Here's what's happening with your content today
           </p>
         </div>
@@ -117,7 +117,7 @@ const DashboardPageContent = () => {
               </button>
               <button
                 onClick={handleResetLayout}
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
               >
                 <RefreshCcw className="h-4 w-4" />
                 Reset
@@ -126,7 +126,7 @@ const DashboardPageContent = () => {
           ) : (
             <button
               onClick={() => setEditMode((v) => !v)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-2xl bg-white text-slate-700 hover:bg-slate-50 transition-all duration-200 border border-slate-200 shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-2xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 border border-slate-200 dark:border-slate-700 shadow-sm"
             >
               <Move className="h-4 w-4" />
               Customize
@@ -175,20 +175,20 @@ const DashboardPageContent = () => {
         />
         {analytics.map((item, index) =>
           isLoading ? (
-            <div key={`analytics-${index}`} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <div key={`analytics-${index}`} className="bg-card rounded-2xl border p-5 shadow-sm">
               <Skeleton className="h-5 w-24 mb-4" />
               <Skeleton className="h-8 w-20 mb-2" />
               <Skeleton className="h-4 w-32" />
             </div>
           ) : (
-            <div key={`analytics-${index}`} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-300">
+            <div key={`analytics-${index}`} className="bg-card rounded-2xl border border p-5 shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-slate-500 text-sm font-medium">{item.title}</span>
+                <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">{item.title}</span>
                 <div className="w-8 h-8 rounded-lg bg-[#00B4B4]/10 flex items-center justify-center">
                   <item.icon className="h-4 w-4 text-[#00B4B4]" />
                 </div>
               </div>
-              <div className="text-3xl font-bold text-slate-900 mb-1">
+              <div className="text-3xl font-bold text-foreground dark:text-white mb-1">
                 {formatNumber(getAnalyticsData(item.key)?.value ?? 0)}
               </div>
               <div className="flex items-center gap-1 text-sm">
@@ -207,7 +207,7 @@ const DashboardPageContent = () => {
           )
         )}
         {isLoading ? (
-          <div key="revenueOverview" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div key="revenueOverview" className="bg-card rounded-2xl border border p-6 shadow-sm">
             <Skeleton className="h-6 w-40 mb-2" />
             <Skeleton className="h-4 w-64 mb-6" />
             <div className="space-y-4">
@@ -221,14 +221,14 @@ const DashboardPageContent = () => {
             </div>
           </div>
         ) : (
-          <div key="revenueOverview" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div key="revenueOverview" className="bg-card rounded-2xl border border p-6 shadow-sm">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">Revenue Overview</h3>
-                <p className="text-sm text-slate-500">Monthly revenue from premium content</p>
+                <h3 className="text-lg font-semibold text-foreground dark:text-white">Revenue Overview</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Monthly revenue from premium content</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-2xl font-bold text-foreground dark:text-white">
                   ${formatNumber(overviewData?.revenueOverview?.currentMonth?.value ?? 0)}
                 </p>
                 <div className="flex items-center justify-end gap-1 mt-1">
@@ -248,55 +248,55 @@ const DashboardPageContent = () => {
               {overviewData?.revenueOverview?.monthly?.map(
                 (item: { label: string; value: number }, index: number) => (
                   <div key={index} className="flex items-center gap-3">
-                    <span className="text-sm text-slate-500 w-10">
+                    <span className="text-sm text-slate-500 dark:text-slate-400 w-10">
                       {item.label}
                     </span>
-                    <div className="flex-1 bg-slate-100 rounded-full h-2 relative overflow-hidden">
+                    <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2 relative overflow-hidden">
                       <div
                         className="bg-gradient-to-r from-[#00B4B4] to-[#00d4d4] h-full rounded-full transition-all duration-500"
                         style={{ width: `${Math.min((item.value / 3000) * 100, 100)}%` }}
                       />
                     </div>
-                    <span className="text-sm text-slate-900 w-16 text-right font-medium">
+                    <span className="text-sm text-foreground dark:text-white w-16 text-right font-medium">
                       ${formatNumber(item.value)}
                     </span>
                   </div>
                 )
               )}
             </div>
-            <div className="grid grid-cols-3 gap-4 pt-5 mt-5 border-t border-slate-100">
+            <div className="grid grid-cols-3 gap-4 pt-5 mt-5 border-t border-slate-100 dark:border-slate-700">
               <div className="text-center">
-                <p className="text-xl font-bold text-slate-900">
+                <p className="text-xl font-bold text-foreground dark:text-white">
                   ${formatNumber(overviewData?.revenueOverview?.projectedAnnual ?? 0)}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">Projected Annual</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Projected Annual</p>
               </div>
               <div className="text-center">
-                <p className="text-xl font-bold text-slate-900">
+                <p className="text-xl font-bold text-foreground dark:text-white">
                   ${formatNumber(overviewData?.revenueOverview?.avgMonthly ?? 0)}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">Avg Monthly</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Avg Monthly</p>
               </div>
               <div className="text-center">
                 <p className="text-xl font-bold text-emerald-600">
                   +{overviewData?.revenueOverview?.avgGrowth ?? 0}%
                 </p>
-                <p className="text-xs text-slate-500 mt-1">Avg Growth</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Avg Growth</p>
               </div>
             </div>
           </div>
         )}
 
-        <div key="topContent" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div key="topContent" className="bg-card rounded-2xl border border p-6 shadow-sm">
           <div className="mb-5">
-            <h3 className="text-lg font-semibold text-slate-900">Top Performing Content</h3>
-            <p className="text-sm text-slate-500">Your highest engagement and revenue generating content</p>
+            <h3 className="text-lg font-semibold text-foreground dark:text-white">Top Performing Content</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Your highest engagement and revenue generating content</p>
           </div>
           <div className="space-y-3">
             {isLoading ? (
               <>
                 {[...Array(3)].map((_, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                     <Skeleton className="w-8 h-8 rounded-full" />
                     <Skeleton className="w-8 h-8 rounded-full" />
                     <div className="flex-1 space-y-2">
@@ -324,9 +324,9 @@ const DashboardPageContent = () => {
                     ) => (
                       <div
                         key={index}
-                        className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-all duration-200"
+                        className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
                       >
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#0f172a] flex items-center justify-center text-sm font-bold text-white">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#0f172a] dark:bg-[#00B4B4] flex items-center justify-center text-sm font-bold text-white">
                           {index + 1}
                         </div>
                         <button className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-[#00B4B4] flex items-center justify-center text-[#00B4B4] hover:bg-[#00B4B4]/10 transition-colors">
@@ -335,10 +335,10 @@ const DashboardPageContent = () => {
                         <div className="flex-1 min-w-0 space-y-2">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-slate-900 truncate text-sm mb-1">
+                              <h4 className="font-medium text-foreground dark:text-white truncate text-sm mb-1">
                                 {item.title}
                               </h4>
-                              <div className="flex items-center gap-3 text-sm text-slate-500">
+                              <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
                                 <span className="flex items-center gap-1">
                                   <Eye size={12} />
                                   {formatNumber(item.views)}
@@ -357,17 +357,17 @@ const DashboardPageContent = () => {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               {item.genre && (
-                                <div className="text-xs px-2 py-1 bg-[#0f172a]/10 text-[#0f172a] rounded-full font-medium">
+                                <div className="text-xs px-2 py-1 bg-[#0f172a]/10 dark:bg-slate-700 text-[#0f172a] dark:text-slate-300 rounded-full font-medium">
                                   {item.genre}
                                 </div>
                               )}
                               {item.rating && (
-                                <div className="text-xs px-3 py-1 border border-amber-300 bg-amber-50 rounded-full text-amber-700 font-medium">
+                                <div className="text-xs px-3 py-1 border border-amber-300 dark:border-amber-500/50 bg-amber-50 dark:bg-amber-500/10 rounded-full text-amber-700 dark:text-amber-400 font-medium">
                                   {item.rating}
                                 </div>
                               )}
                             </div>
-                            <Button size="iconSm" variant={"ghost"} className="text-slate-400 hover:text-slate-900 hover:bg-slate-200">
+                            <Button size="iconSm" variant={"ghost"} className="text-slate-400 hover:text-foreground dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700">
                               <Ellipsis size={16} />
                             </Button>
                           </div>

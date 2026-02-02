@@ -16,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { FluxTabs } from "@/components/dashboard/flux/FluxTabs";
 import InputEnhanced from "@/components/ui/input-enhanced";
 import { Loader } from "@/components/ui/loader";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -48,6 +49,10 @@ import {
   Search,
   Table as TableIcon,
   Upload,
+  Folder,
+  Building2,
+  Film,
+  Users2,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -96,6 +101,45 @@ const stats = [
   },
 ];
 
+// Mock shared content data
+const sharedContentFolders = [
+  {
+    id: "1",
+    companyName: "Netflix Studios",
+    companyLogo: "/images/companies/netflix.png",
+    itemCount: 24,
+    lastUpdated: "2 days ago",
+  },
+  {
+    id: "2",
+    companyName: "Warner Bros. Discovery",
+    companyLogo: "/images/companies/warner.png",
+    itemCount: 18,
+    lastUpdated: "1 week ago",
+  },
+  {
+    id: "3",
+    companyName: "A24 Films",
+    companyLogo: "/images/companies/a24.png",
+    itemCount: 12,
+    lastUpdated: "3 days ago",
+  },
+  {
+    id: "4",
+    companyName: "Lionsgate Entertainment",
+    companyLogo: "/images/companies/lionsgate.png",
+    itemCount: 8,
+    lastUpdated: "5 days ago",
+  },
+  {
+    id: "5",
+    companyName: "BBC Studios",
+    companyLogo: "/images/companies/bbc.png",
+    itemCount: 31,
+    lastUpdated: "Yesterday",
+  },
+];
+
 const ContentLibraryPageContent = () => {
   const { data: user } = useUser();
   const effectiveRole = useEffectiveRole();
@@ -106,6 +150,12 @@ const ContentLibraryPageContent = () => {
   );
   const [perPage] = useState(12);
   const [viewMode, setViewMode] = useState<"grid" | "list" | "table">("grid");
+  const [contentTab, setContentTab] = useState<"my-content" | "shared">("my-content");
+
+  const contentTabs = [
+    { id: "my-content", label: "My Content", icon: Film },
+    { id: "shared", label: "Shared with Me", icon: Users2 },
+  ];
 
   // Check if user has permission to write media
   const canWriteMedia =
@@ -171,7 +221,7 @@ const ContentLibraryPageContent = () => {
   }
 
   return (
-    <>
+    <div className="space-y-6">
       <PageTitle
         title="Content Library"
         description="Manage and organize your media files"
@@ -257,40 +307,34 @@ const ContentLibraryPageContent = () => {
         </CardContent>
       </Card>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-3 ">
+      {/* Stats Cards - Compact */}
+      <div className="grid grid-cols-3 gap-3">
         {stats.map((stat) =>
           isLoading ? (
-            <Card key={stat.label} className="gap-0">
-              <CardHeader>
-                <Skeleton className="h-6 w-32 mb-2" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-10 w-24 mb-2" />
-                <Skeleton className="h-4 w-20" />
+            <Card key={stat.label}>
+              <CardContent className="py-2 px-3 flex items-center gap-2">
+                <Skeleton className="h-7 w-7 rounded-md" />
+                <div className="flex items-baseline gap-2">
+                  <Skeleton className="h-5 w-12" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
               </CardContent>
             </Card>
           ) : (
-            <Card key={stat.label} className="gap-0">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 justify-between">
-                  {stat.label}
-                  <div
-                    className={`flex items-center justify-center w-8 h-8 rounded-full ${stat.iconBg}`}
-                  >
-                    {stat.icon}
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatNumber(
-                    statsData?.[stat.key as keyof typeof statsData]?.value ?? 0
-                  )}
+            <Card key={stat.label}>
+              <CardContent className="py-2 px-3 flex items-center gap-2">
+                <div
+                  className={`flex items-center justify-center h-7 w-7 rounded-md ${stat.iconBg}`}
+                >
+                  {stat.icon}
                 </div>
-                <div className={`text-xs font-semibold ${stat.subColor}`}>
-                  {statsData?.[stat.key as keyof typeof statsData]?.change ?? 0}
-                  {stat.sub}
+                <div className="flex items-baseline gap-2">
+                  <p className="text-lg font-bold text-slate-900 dark:text-foreground">
+                    {formatNumber(
+                      statsData?.[stat.key as keyof typeof statsData]?.value ?? 0
+                    )}
+                  </p>
+                  <p className="text-xs text-slate-500">{stat.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -298,22 +342,29 @@ const ContentLibraryPageContent = () => {
         )}
       </div>
 
-      {/* Film Library */}
-      <Card>
-        <CardHeader className="flex items-center justify-between">
-          <div className="flex flex-col gap-2">
-            <CardTitle>
-              {status === MediaStatus.ERROR ? "Failed Uploads" : "Film Library"}
-            </CardTitle>
-            <CardDescription>
-              {status === MediaStatus.ERROR
-                ? "Files that failed to upload or process"
-                : "Your film collection with cover art and details"}
-            </CardDescription>
-          </div>
-          {/* <Button>View Full Library</Button> */}
-        </CardHeader>
-        <CardContent>
+      {/* Content Tabs */}
+      <FluxTabs
+        tabs={contentTabs}
+        activeTab={contentTab}
+        onTabChange={(tab) => setContentTab(tab as "my-content" | "shared")}
+      />
+
+      {/* My Content Tab */}
+      {contentTab === "my-content" && (
+        <Card>
+          <CardHeader className="flex items-center justify-between">
+            <div className="flex flex-col gap-2">
+              <CardTitle>
+                {status === MediaStatus.ERROR ? "Failed Uploads" : "Film Library"}
+              </CardTitle>
+              <CardDescription>
+                {status === MediaStatus.ERROR
+                  ? "Files that failed to upload or process"
+                  : "Your film collection with cover art and details"}
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
           {mediaLoading ? (
             status === MediaStatus.ERROR ? (
               <div className="space-y-0 border border-border rounded-lg overflow-hidden">
@@ -600,7 +651,61 @@ const ContentLibraryPageContent = () => {
           )}
         </CardContent>
       </Card>
-    </>
+      )}
+
+      {/* Shared with Me Tab */}
+      {contentTab === "shared" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Content Shared with Me</CardTitle>
+            <CardDescription>
+              Content shared by your distribution partners and collaborators
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {sharedContentFolders.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {sharedContentFolders.map((folder) => (
+                  <Link
+                    key={folder.id}
+                    href={`/dashboard/content-library/shared/${folder.id}`}
+                    className="group"
+                  >
+                    <Card className="hover:shadow-md transition-all hover:border-[#00B4B4]/50 cursor-pointer">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="h-10 w-10 rounded-lg bg-[#00B4B4]/10 flex items-center justify-center group-hover:bg-[#00B4B4]/20 transition-colors">
+                            <Building2 className="h-5 w-5 text-[#00B4B4]" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-slate-900 dark:text-foreground truncate group-hover:text-[#00B4B4] transition-colors">
+                              {folder.companyName}
+                            </h3>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <Folder className="h-3 w-3" />
+                            {folder.itemCount} items
+                          </span>
+                          <span>{folder.lastUpdated}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-slate-500">
+                <Users2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-medium">No shared content yet</p>
+                <p className="text-sm">Content shared by your partners will appear here</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
 

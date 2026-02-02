@@ -33,7 +33,7 @@ const PageTitle = ({
           </Button>
         )}
         <div className="space-y-1">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
             {title}
           </h2>
           {description && (

@@ -22,13 +22,20 @@ import { toast } from "react-toastify";
 import { MOCK_MODE, mockMediaList, mockMediaStats, mockStorageDetails } from "@/lib/mock-data";
 
 export function useMedia(id: string, token: boolean = false) {
+  const getMockMedia = (): IMedia | undefined => {
+    return mockMediaList.find((m) => m.id === id);
+  };
+
   const { data, isLoading, isError, error, refetch } = useQuery<IMedia, Error>({
     queryKey: ["media", id],
-    queryFn: () => MediaService.getById(id, token),
+    queryFn: () =>
+      MOCK_MODE
+        ? Promise.resolve(getMockMedia() as IMedia)
+        : MediaService.getById(id, token),
     enabled: !!id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: MOCK_MODE ? Infinity : 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: !MOCK_MODE,
     refetchOnMount: false,
   });
 
@@ -322,7 +329,6 @@ export function useMediaList({
   const getMockMediaList = (): IPaginationResult<IMedia> => ({
     items: mockMediaList,
     continuationToken: undefined,
-    total: mockMediaList.length,
     perPage: perPage || 12,
   });
 
@@ -377,6 +383,28 @@ export function useMediaListInfinite({
   contentType?: string;
   perPage?: number;
 } = {}) {
+  const getMockInfiniteData = (): IPaginationResult<IMedia> => {
+    // Filter mock data based on status
+    let filteredItems = mockMediaList;
+    if (status && status !== MediaStatus.READY) {
+      filteredItems = [];
+    }
+    // Filter by search
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filteredItems = filteredItems.filter(
+        (item) =>
+          item.metadata?.title?.toLowerCase().includes(searchLower) ||
+          item.name?.toLowerCase().includes(searchLower)
+      );
+    }
+    return {
+      items: filteredItems,
+      continuationToken: undefined,
+      perPage,
+    };
+  };
+
   const {
     data,
     isLoading,
@@ -389,13 +417,15 @@ export function useMediaListInfinite({
   } = useInfiniteQuery<IPaginationResult<IMedia>, Error>({
     queryKey: ["media-list-infinite", search, status, contentType, perPage],
     queryFn: ({ pageParam }) =>
-      MediaService.getMediaList({
-        search,
-        status,
-        contentType,
-        continuationToken: pageParam as number | undefined,
-        perPage,
-      }),
+      MOCK_MODE
+        ? Promise.resolve(getMockInfiniteData())
+        : MediaService.getMediaList({
+            search,
+            status,
+            contentType,
+            continuationToken: pageParam as number | undefined,
+            perPage,
+          }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       // If continuationToken is 0, null, or undefined, we don't have more data
@@ -404,9 +434,9 @@ export function useMediaListInfinite({
       }
       return lastPage.continuationToken;
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: MOCK_MODE ? Infinity : 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: !MOCK_MODE,
   });
 
   // Flatten all pages into a single array and deduplicate by id
